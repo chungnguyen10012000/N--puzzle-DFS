@@ -51,7 +51,7 @@ method = ""
 n = 0
 
 def getInput():
-    global method, m, n, goal, start
+    global method, n, goal, start
     method = input()
     n = int (input())
     tiles = []
