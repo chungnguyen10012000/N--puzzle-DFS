@@ -62,7 +62,6 @@ def getInput():
     for i in range(n):
         tiles.append(input().split(" "))
     goal.tiles = tiles
-    start.hgf()
 
 
 def findGoal(str): #find the correct place of a tile in goal
