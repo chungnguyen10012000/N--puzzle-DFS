@@ -24,14 +24,14 @@ class Solver:
         self.metrics = Metric(self.frontier)
 
     def dfs(self):
-        """Explore search space using either breadth-first or depth-first search"""
+        """Explore search space using depth-first search"""
 
         self.metrics.start_timer()
 
         initial_state = State(self.initial_state)
         self.frontier.append(initial_state)
         
-        # while queue is not empty..
+        # while stack is not empty..
         while self.frontier:
 
             state = self.frontier.pop()
@@ -95,7 +95,7 @@ class Solver:
 
         n = math.isqrt(len(input_list))
         lst = list(range(1, len(input_list))) + [0]
-        return [lst[i:i+n] for i in range(0, len(lst), n)]
+        return [lst[i:i+n] for i in range(0, len(input_list), n)]
 
     def solvable(self, input_list):
         """Determine if a given input grid is solvable.
