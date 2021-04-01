@@ -1,6 +1,5 @@
 import copy
 import time
-import resource
 
 
 class Metric:
@@ -53,9 +52,3 @@ class Metric:
         """Set stop time"""
         self.end_time = time.time()
         self.search_time = "{0:.2f}".format((self.end_time - self.start_time) * 1000)
-
-
-    def measure_ram_useage(self):
-        """Measure the maximum amount of RAM used."""
-        # https://docs.python.org/3/library/resource.html
-        self.max_ram_useage = (resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / 1000

@@ -35,7 +35,6 @@ def main():
     print("search_depth: ", solution_metrics.search_depth)
     print("max_search_depth: ", solution_metrics.max_search_depth)
     print("running_time: ", solution_metrics.search_time, "ms")
-    print("max_ram_useage: ", solution_metrics.max_ram_useage, "MB")
 
 
 if __name__ == "__main__":
