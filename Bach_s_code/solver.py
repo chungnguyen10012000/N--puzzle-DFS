@@ -44,7 +44,6 @@ class Solver:
             if self.goal_test(state):
                 self.metrics.path_to_goal = state.path_history
                 self.metrics.stop_timer()
-                self.metrics.measure_ram_useage()
                 return self.metrics
 
             self.expand_nodes(state)
