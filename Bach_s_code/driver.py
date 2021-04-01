@@ -50,10 +50,10 @@ def main():
     print("[+] Path to goal:\n")
     for mat in solution_metrics.path_to_goal:
         print_mat(mat)
-        print("-" * 50)
+        print("-" * 30)
 
     print("[+] Path length:", len(solution_metrics.path_to_goal))
-    print("[+] Search time:", solution_metrics.search_time)
+    print("[+] Search time (ms):", solution_metrics.search_time)
 
 
 if __name__ == "__main__":
