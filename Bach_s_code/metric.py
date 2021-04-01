@@ -17,18 +17,14 @@ class Metric:
         self.start_time = 0
         self.end_time = 0
         self.search_time = 0
-        self.max_ram_useage = 0
-
 
     def cost_of_path(self):
         """Return the number of steps taken to reach the goal"""
         return len(self.path_to_goal)
 
-
     def fringe_size(self):
         """Return the length of the fringe (frontier)"""
         return len(self.fringe)
-
 
     def update_max_fringe(self):
         """Update the value of max_fringe_size!"""
@@ -36,17 +32,14 @@ class Metric:
         if fringe_length > self.max_fringe_size:
             self.max_fringe_size = fringe_length
 
-
     def update_max_depth(self):
         """Update the maximum search depth reached"""
         if self.search_depth > self.max_search_depth:
             self.max_search_depth = copy.copy(self.search_depth)
 
-
     def start_timer(self):
         """Set start time"""
         self.start_time = time.time()
-
 
     def stop_timer(self):
         """Set stop time"""

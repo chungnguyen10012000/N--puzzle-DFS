@@ -2,10 +2,20 @@ import sys, math
 from solver import Solver
 
 
-def main():
-    """"Main driver function"""
+def print_mat(mat):
+    res = ""
+    for row in mat:
+        for x in row:
+            if x == 0:
+                res += "_".rjust(4)
+            else:
+                res += str(x).rjust(4)
+        res += "\n"
+    print(res)
 
-    input_list = input("Input list (comma seperated): ")
+
+def inp_list(promt):
+    input_list = input(promt)
     input_list = list(map(int, input_list.split(",")))
 
     n2 = len(input_list)
@@ -19,22 +29,31 @@ def main():
         print("Input list must contain all numbers from 0 to n^2 - 1.")
         sys.exit()
 
-    try:
-        solver = Solver(input_list)
-    except ValueError:
-        print('No solution exists.')
-        sys.exit()
+    return input_list
+
+
+def main():
+    """"Main driver function"""
+
+    init_list = inp_list("Init list (comma seperated): ")
+    goal_list = inp_list("Goal list (comma seperated): ")
+
+    solver = Solver(init_list, goal_list)
+
+    print("[+] Initial state:\n")
+    print_mat(solver.initial_state)
+    print("[+] Goal state:\n")
+    print_mat(solver.goal_state)
 
     solution_metrics = solver.dfs()
 
-    print("path_to_goal: ", solution_metrics.path_to_goal)
-    print("cost_of_path: ", solution_metrics.cost_of_path())
-    print("nodes_expanded: ", solution_metrics.nodes_expanded)
-    print("fringe_size: ", solution_metrics.fringe_size())
-    print("max_fringe_size: ", solution_metrics.max_fringe_size)
-    print("search_depth: ", solution_metrics.search_depth)
-    print("max_search_depth: ", solution_metrics.max_search_depth)
-    print("running_time: ", solution_metrics.search_time, "ms")
+    print("[+] Path to goal:\n")
+    for mat in solution_metrics.path_to_goal:
+        print_mat(mat)
+        print("-" * 50)
+
+    print("[+] Path length:", len(solution_metrics.path_to_goal))
+    print("[+] Search time:", solution_metrics.search_time)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class State:
         # https://docs.python.org/2/library/copy.html
         self.state = copy.deepcopy(input_state)
 
-        self.path_history = []
+        self.path_history = [copy.deepcopy(self.state)]
 
         self.n = len(input_state[0])
 
