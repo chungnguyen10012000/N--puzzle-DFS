@@ -1,9 +1,8 @@
 import copy
 
 class Node:
-    def __init__(self, tiles=[], parent=None):
+    def __init__(self, tiles = []):
         self.tiles = tiles
-        self.parent = parent
         
     def isGoal(self):
         return self.tiles == goal.tiles
@@ -40,19 +39,45 @@ class Node:
             newTiles.append(new)
         ret = []
         for i in newTiles: #create children nodes
-            child = Node(i, self)
+            child = Node(i)
             ret.append(child)
         return ret
 
 
-start = Node()
-goal = Node()
-method = ""
-n = 0
 
-def getInput():
-    global method, n, goal, start
-    method = input()
+
+def dfs(start , goal):   
+    lst = [] # stack 
+    lst.append(start)
+    path = []
+    depth = n
+    i = 0
+    ret = Node()
+    while(1):
+        path.append(len(lst) - 1) 
+        if lst[len(lst) - 1].isGoal() :
+            ret = lst[len(lst) -1]
+            return ret
+        _child = start.genChildren();
+        for i in _child:
+            lst.append(i)
+        lst.pop()
+    return path
+    
+def printOut(path):
+    for i in range(len(path)):
+        state = path[i]
+        for j in range(n):
+            for k in range(n):
+                print ((state.tiles)[j][k] , end= " ")
+            print ()
+        print("\n")
+        
+
+
+if __name__ == '__main__':
+    goal = Node()
+    start = Node()
     n = int (input())
     tiles = []
     for i in range(n):
@@ -62,18 +87,14 @@ def getInput():
     for i in range(n):
         tiles.append(input().split(" "))
     goal.tiles = tiles
+    res = dfs(start, goal)
+    printOut(res)
+        
 
 
-def findGoal(str): #find the correct place of a tile in goal
-    global goal
-    tiles = goal.tiles
-    for i in range(n):
-        for j in range(n):
-            if tiles[i][j] == str:
-                return i, j
 
 
-def DFS():
+
     
 
 
