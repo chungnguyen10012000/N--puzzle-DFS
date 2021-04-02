@@ -1,114 +1,132 @@
+import sys
 import copy
 import hashlib
-import sys
 
 
 class Node:
-    def __init__(self, tiles = [] , parent = None ):
+    def __init__(self, tiles=[], parent=None):
         self.tiles = copy.deepcopy(tiles)
         self.parent = parent
         self.hash = hashlib.sha256(str(tiles).encode()).digest()
         self.n = len(tiles)
 
-    def isGoal(self):
-        return self.tiles == goal.tiles
-
-    def findBlank(self): #find the blank in a node's tiles
+    def findBlank(self):  # find the blank in a node's tiles
         tiles = self.tiles
         for i in range(self.n):
             for j in range(self.n):
                 if tiles[i][j] == '_':
                     return i, j
 
-    def genChildren(self):
+    def genChildren(self):  # generate all moves possible
         tiles = self.tiles
-        x, y = self.findBlank()
-        newTiles = []
-        if x + 1 < self.n: #moving blank down / moving a tile up
-            new = copy.deepcopy(tiles)
-            new[x][y] = new[x+1][y]
-            new[x+1][y] = '_'
-            newTiles.append(new)
-        if x - 1 > -1: #moving blank up / moving a tile down
-            new = copy.deepcopy(tiles)
-            new[x][y] = new[x-1][y]
-            new[x-1][y] = '_'
-            newTiles.append(new)
-        if y + 1 < self.n:  # moving blank right / moving a tile left
-            new = copy.deepcopy(tiles)
-            new[x][y]=new[x][y+1]
-            new[x][y+1]='_'
-            newTiles.append(new)
-        if y - 1 > -1: # moving blank left / moving a tile right
-            new = copy.deepcopy(tiles)
-            new[x][y] = new[x][y - 1]
-            new[x][y-1] = '_'
-            newTiles.append(new)
-        ret = []
-        for i in newTiles: #create children nodes
-            child = Node(tiles=i, parent=self)
-            ret.append(child)
-        return ret
-
-    
-def dfs(start , goal):
-    lst = [] 
-    lst.append(start)
-    vst = set()
-    while lst:
-        u = lst.pop()
-        if u.isGoal():
-            return u
-        if u.hash not in vst:
-            vst.add(u.hash)
-            for w in u.genChildren():
-                if w.hash not in vst:
-                    lst.append(w)
-    return None
+        x0, y0 = self.findBlank()
+        moves = ["down", "up", "right", "left"]
+        children = []
+        for move in moves:
+            if move == "left":
+                x, y = 0, -1
+            elif move == "right":
+                x, y = 0, 1
+            elif move == "up":
+                x, y = 1, 0
+            else:
+                x, y = -1, 0
+            if 0 <= x0 + x < self.n and 0 <= y0 + y < self.n:
+                tmp = copy.deepcopy(tiles)
+                tmp[x0][y0], tmp[x0 + x][y0 + y] = tmp[x0 + x][y0 + y], tmp[x0][y0]
+                child = Node(tiles=tmp, parent=self)
+                children.append(child)
+        return children
 
 
-def getInput(fileName):
-    with open(fileName, "r") as f:
-        data = f.read().strip().splitlines()
-    n = int(data[0])
-    tiles = []
-    startTiles = [data[i + 1].strip().split() for i in range(n)]
-    start = Node(startTiles)
-    goalTiles = [data[i + 1 + n].strip().split() for i in range(n)]
-    goal = Node(goalTiles)
-    return start, goal
+class Solver:
+    def __init__(self):
+        self.n = None
+        self.start = None
+        self.goal = None
 
+    def checkTiles(self, tiles):
+        return set(sum(tiles, [])) == set(list(map(str, range(1, self.n**2))) + ["_"])
 
-def output(fileName, path):
-    res = ""
-    n = len(path[0])
-    for i in path:
-        for row in i:
-            for x in row:
-                res += str(x).rjust(5)
+    def load(self, inFile):
+        with open(inFile, "r") as f:
+            data = f.read().strip().splitlines()
+        self.n = int(data[0])
+
+        startTiles = [data[i + 1].strip().split() for i in range(self.n)]
+        if not self.checkTiles(startTiles):
+            print("Invalid start tiles!")
+            sys.exit()
+        self.start = Node(startTiles)
+
+        goalTiles = [data[i + 1 + self.n].strip().split() for i in range(self.n)]
+        if not self.checkTiles(goalTiles):
+            print("Invalid goal tiles!")
+            sys.exit()
+        self.goal = Node(goalTiles)
+
+    def save(self, outFile):
+        res = ""
+        for i in self.solution_path:
+            for row in i:
+                for x in row:
+                    res += str(x).rjust(5)
+                res += "\n"
+            res += "-" * 20
             res += "\n"
-        res += "=" * 20
-        res += "\n"
-    open(fileName, "w").write(res)
+        open(outFile, "w").write(res)
+
+    def dfs(self):
+        stack = []
+        stack.append(self.start)
+        visited = set()
+        while stack:  # stack not empty
+            u = stack.pop()
+            if u.tiles == self.goal.tiles:  # We reach goal
+                return u
+            if u.hash not in visited:
+                visited.add(u.hash)
+                for w in u.genChildren():
+                    if w.hash not in visited:
+                        stack.append(w)
+        return None
+
+    def solve(self):
+        if not self.start:
+            print("Undefined start state.")
+            sys.exit()
+
+        if not self.goal:
+            print("Undefined goal state.")
+            sys.exit()
+
+        sol = self.dfs()
+
+        if sol is None:
+            print("No solution.")
+            sys.exit()
+
+        path = [sol.tiles]
+        while True:
+            sol = sol.parent
+            path.append(sol.tiles)
+            if sol.parent is None:
+                break
+        self.solution_path = path[::-1]
+        return len(path)
+
+
+def main():
+    inFile, outFile = sys.argv[1], sys.argv[2]
+    
+    s = Solver()
+    s.load(inFile)
+    n_step = s.solve()
+    s.save(outFile)
+
+    print("SUCCESS!")
+    print("Number of steps:", n_step)
 
 
 if __name__ == '__main__':
-    inFile, outFile = sys.argv[1], sys.argv[2]
-    start, goal = getInput(inFile)
-
-    res = dfs(start, goal)
-
-    if res is None:
-        print("No solution.")
-        sys.exit()
-
-    path = [res.tiles]
-    while True:
-        res = res.parent
-        path.append(res.tiles)
-        if res.parent is None:
-            break
-
-    output(outFile, path[::-1])
-    print("SUCCESS !")
-    print("Number of steps:", len(path))
+    main()
