@@ -1,9 +1,12 @@
 import copy
+import hashlib
 
 class Node:
-    def __init__(self, tiles = []):
+    def __init__(self, tiles = [] , parent = None ):
         self.tiles = tiles
-        
+        self.parent = parent
+        self.hash = hashlib.sha256(str(tiles).encode()).digest()
+
     def isGoal(self):
         return self.tiles == goal.tiles
 
@@ -39,41 +42,30 @@ class Node:
             newTiles.append(new)
         ret = []
         for i in newTiles: #create children nodes
-            child = Node(i)
+            child = Node(tiles=i, parent=self)
             ret.append(child)
         return ret
 
-
-
-
-def dfs(start , goal):   
-    lst = [] # stack 
-    lst.append(start)
-    path = []
-    depth = n
-    i = 0
-    ret = Node()
-    while(1):
-        path.append(len(lst) - 1) 
-        if lst[len(lst) - 1].isGoal() :
-            ret = lst[len(lst) -1]
-            return ret
-        _child = start.genChildren();
-        for i in _child:
-            lst.append(i)
-        lst.pop()
-    return path
     
-def printOut(path):
-    for i in range(len(path)):
-        state = path[i]
-        for j in range(n):
-            for k in range(n):
-                print ((state.tiles)[j][k] , end= " ")
-            print ()
-        print("\n")
-        
+def dfs(start , goal):
+    lst = [] 
+    lst.append(start)
+    vst = set()
+    while lst:
+        u = lst.pop()
+        if u.isGoal():
+            return u
+        if u.hash not in vst:
+            vst.add(u.hash)
+            for w in u.genChildren():
+                if w.hash not in vst:
+                    lst.append(w)
 
+
+def printOut(path , n):
+    for i in range(n):
+        print(" ".join(map(str, path[i])))
+        
 
 if __name__ == '__main__':
     goal = Node()
@@ -88,13 +80,16 @@ if __name__ == '__main__':
         tiles.append(input().split(" "))
     goal.tiles = tiles
     res = dfs(start, goal)
-    printOut(res)
-        
 
+    path = [res.tiles]
+    while True:
+        res = res.parent
+        path.append(res.tiles)
+        if res.parent is None:
+            break
 
-
-
-
+    for i in path[::-1]:
+        printOut(i, n)
+        print("-"*20)
     
-
-
+    print(len(path))
